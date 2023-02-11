@@ -20,10 +20,6 @@ const updateContacts = async(contacts) => await fs.writeFile(contactsPath, JSON.
   
   async function addContact({name, email, phone}) {
     const contacts = await listContacts();
-    if (!name || !email || !phone) {
-      console.warn("One of the values is empty");
-      return null;
-    }
     const newContact = {
         id: nanoid(),
         name,
@@ -43,10 +39,12 @@ const updateContacts = async(contacts) => await fs.writeFile(contactsPath, JSON.
     if (index === -1) {
         return null;
     }
-    contacts[index] = {contactId, ...data};
-    await updateContact(contacts);
+    const newContact = {id: contactId, ...data};
+    contacts.splice(index, 1);
+    contacts.push(newContact);
+    await updateContacts(contacts);
 
-    return contacts[index];
+    return newContact;
   }
 
   async function removeContact(contactId) {
