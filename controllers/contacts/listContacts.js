@@ -5,11 +5,10 @@ const listContacts = async (req, res, next) => {
       const {page = 1, limit = 5, favorite} = req.query;
       const skip = (page - 1) * limit;
 
-      const result = favorite 
-        ? await Contact.find({owner, favorite}, "-createdAt -updatedAt", {skip, limit})
-        .populate("owner", "name email")
-        : await Contact.find({owner}, "-createdAt -updatedAt", {skip, limit})
-        .populate("owner", "name email");
+      const options = favorite ? {owner, favorite} : {owner}
+
+      const result = await Contact.find(options, "-createdAt -updatedAt", {skip, limit})
+                                  .populate("owner", "name email");
 
       res.json(result);
   }
